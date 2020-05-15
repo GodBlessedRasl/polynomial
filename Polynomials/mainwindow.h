@@ -29,21 +29,20 @@ struct node;
 struct Dnode{
     int id;
     QListWidgetItem* item_ptr;
-    Dnode *next,*prev;
     std::list<node>* polynome_ptr;
     ~Dnode() = default;
 };
 
-class DList{
+class Container{
  public:
-    Dnode *Head, *Tail;
-    DList():Head(NULL),Tail(NULL){};
-    ~DList();
+    std::list<Dnode*> polys_container;
     void insert(QListWidgetItem* item_ptr, std::list<node>);
-    int size();
     void poly_delete(Dnode* now);
     Dnode* GetDnode(QListWidgetItem* target);
-    //friend std::ostream &operator<<(std::ostream, DList *main_list );
+    int size() const { return polys_container.size(); }
+    ~Container() = default;
+private:
+    void update_ids();
 };
 
 struct node : public std::pair<int,int> {
@@ -63,14 +62,16 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     bool checker(QString &s);
-    DList(main_list);
+    Container(main_list);
     std::list<node> to_List(QString &s);
     void mb (std::string &s, std::list<node> &ans);
     void Beautify (std::list<node> *ans);
     std::string to_str(std::list<node> *now);
+    QListWidgetItem* pre_current_item = NULL;
+    QListWidgetItem* current_item = NULL;
+    void SetColorsDefault();
    // friend std::ostream &operator<<(std::ostream, DList *main_list );
 private slots:
-
     void on_insert_clicked();
     void on_delete_button_clicked();
     void on_DERIVATIVE_clicked();
@@ -78,6 +79,12 @@ private slots:
     void on_find_the_value_clicked();
 
     void on_save_clicked();
+
+    void on_SUM_clicked();
+
+    void on_Base_itemPressed(QListWidgetItem *item);
+
+    void on_multiply_clicked();
 
 private:
     Ui::MainWindow *ui;

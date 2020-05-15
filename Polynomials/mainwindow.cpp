@@ -150,7 +150,9 @@ void MainWindow::on_insert_clicked()
         std::list<node> now = to_List(cur_s);
         Beautify(&now);
 
+
         std::string to_stred = to_str(&now);
+//        to_stred += std::to_string()
         cur_s = QString(to_stred.c_str());
         ui->Base->addItem(cur_s);
         auto this_item_ptr = ui->Base->item(ui->Base->count() - 1);
@@ -169,106 +171,40 @@ void MainWindow::on_insert_clicked()
 }
 
 
-
-DList::~DList(){
-    for (Dnode* iterate = Head; iterate != NULL;  ) {
-        Dnode* next = iterate->next;
-        poly_delete(iterate);
-        iterate = next;
+void Container::update_ids() {
+    int cur_id = 0;
+    auto iterator = polys_container.begin();
+    for (; iterator != polys_container.end(); ++iterator) {
+        (*iterator)->id = cur_id++;
     }
 }
 
-void DList::insert(QListWidgetItem *item_ptr, std::list<node> now){
+void Container::insert(QListWidgetItem *item_ptr, std::list<node> now){
     Dnode *cur = new Dnode;
     cur->polynome_ptr = new std::list<node>(now);
-    cur->next = NULL;
     cur->item_ptr = item_ptr;
-    if (Head!=NULL) {
-        cur->id = Tail->id + 1;
-        cur->prev = Tail;
-        Tail->next = cur;
-        Tail  = cur;
-    } else {
-        cur->id = 1;
-        cur->prev = NULL;
-        Head = Tail = cur;
-    }
+    polys_container.push_back(cur);
+    update_ids();
 }
 
-int DList::size(){
-    int sz = 0;
-    Dnode *cur = Head;
-    while(cur!=NULL){
-        ++sz;
-        cur = cur->next;
+void Container::poly_delete(Dnode* search){
+    Dnode* it;
+    auto iterator = polys_container.begin();
+    for (; iterator != polys_container.end() &&
+         (*iterator) != search; ++iterator) { }
+    if (iterator == polys_container.end()) {
+        throw std::runtime_error("smth's wrong with deleting polynome");
     }
-    return sz;
+    polys_container.remove(*(iterator));
+    update_ids();
 }
 
-void DList::poly_delete(Dnode* now){
-    if (now == NULL) {
-        return;
+Dnode* Container::GetDnode(QListWidgetItem *target) {
+    auto iterator = polys_container.begin();
+    while ((*iterator)->item_ptr != target) {
+        ++iterator;
     }
-//    now->polynome_ptr->~List();
-    if (now->prev != NULL && now->next != NULL) {
-        Dnode *cur = now->next;
-        now->next->prev = now->prev;
-        now->prev->next = now->next;
-        delete now;
-        while(cur!=NULL){
-            --(cur->id);
-            cur=cur->next;
-        }
-        return;
-    }
-    if (now->next == NULL && now->prev == NULL) {
-        Head = NULL;
-        delete now;
-        return;
-    }
-    if (now->prev == NULL) {
-        Head = now->next;
-        now->next->prev = NULL;
-        delete now;
-        return;
-    }
-    if (now->next == NULL) {
-        Tail = now->prev;
-        now->prev->next  = NULL;
-        delete now;
-        return;
-    }
-}
-
-//std::list<node>::~std::list<node>(){
-//    while(Head!=NULL){
-//        node *cur = Head->next;
-//        delete Head;
-//        Head = cur;
-//    }
-//}
-
-//void std::list<node>::add(int an, int n){
-//    node *cur = new node;
-//    cur->n = n;
-//    cur->an = a_n;
-//    if (Head == NULL) {
-//        Head = cur;
-//        return;
-//    }
-//    node* iterate = Head;
-//    while (iterate->next != NULL) {
-//        iterate = iterate->next;
-//    }
-//    iterate->next = cur;
-//}
-
-Dnode* DList::GetDnode(QListWidgetItem *target) {
-    Dnode* traverse = Head;
-    while (traverse->item_ptr != target) {
-        traverse = traverse->next;
-    }
-    return traverse;
+    return *iterator;
 }
 
 void MainWindow::on_delete_button_clicked()
@@ -403,56 +339,20 @@ std::string MainWindow::to_str(std::list<node> *now) {
 }
 
 
-
-//std::string MainWindow::to_str(std::list<node> *now){
-//    std::string ans = "";
-//    for (auto iterator = now->begin(); iterator != now->end();
-//        ++iterator) {
-//        auto cur = *iterator;
-//        int an = cur.GetA_N();
-//        int n = cur.GetN();
-//        if(an>0 && cur!=*(now->begin())){
-//            ans+='+';
-//        }
-//        if(n==0){
-//            std ::string s1 = std::to_string(an);
-//            std ::string s2 = std::to_string(n);
-//            if(pos==0){
-//                ans+=s1;
-//            }
-//            ans+='1';
-//        }else if(an!=0){
-//            std ::string s1 = std::to_string(an);
-//            std ::string s2 = std::to_string(n);
-//            if(s1=="1"){
-//                if(s2=="1"){
-//                    ans+='x';
-//                }else{
-//                    ans+="x^"+s2;
-//                }
-//            }else{
-//                if(s2 =="1"){
-//                    ans+=s1+'x';
-//                }else{
-//                    ans+=s1+"x^"+s2;
-//                }
-//            }
-//        }
-//    }
-//    return ans;
-//}
-
+void MainWindow::SetColorsDefault() {
+    if (pre_current_item != NULL) {
+        pre_current_item->setBackgroundColor(Qt::white);
+        pre_current_item->setForeground(Qt::black);
+    }
+    if (current_item != NULL) {
+        current_item->setBackgroundColor(Qt::white);
+        current_item->setForeground(Qt::black);
+    }
+}
 
 void MainWindow::on_DERIVATIVE_clicked()
 {
-    //QMessageBox::about(this, "Derivative", "Enter point: ");
-//    auto current_item_widget_ptr = ui->Base->currentItem();
-//    auto current_item_dnode_ptr = main_list.GetDnode(current_item_widget_ptr);
-//    auto polynome = *current_item_dnode_ptr->polynome_ptr;
-//    int
-//    for (auto it = polynome.begin(); it != polynome.end(); ++it) {
-
-//    }
+    SetColorsDefault();
     auto current_item_widget_ptr = ui->Base->currentItem();
     auto current_item_dnode_ptr = main_list.GetDnode(current_item_widget_ptr);
     std::list<node>* poly_tpr = (current_item_dnode_ptr->polynome_ptr);
@@ -461,13 +361,10 @@ void MainWindow::on_DERIVATIVE_clicked()
         iterator!=poly_tpr->end();++iterator){
         int n = (*iterator).GetN();
         if(n == 0){
-//            (*iterator).second = 0;
             proisv_list.push_back(node(0,0));
         } else{
             proisv_list.push_back(node((*iterator).first - 1,
                                   (*iterator).second * n));
-//            (*iterator).second*=n;
-//            --(*iterator).first;
         }
     }
     std ::string ans = to_str(&proisv_list);
@@ -477,8 +374,8 @@ void MainWindow::on_DERIVATIVE_clicked()
 
 void MainWindow::on_find_the_value_clicked()
 {
+    SetColorsDefault();
     QString str = ui->insert_point->text();
-    //std:: string point = str.toStdString();
     double point = str.toDouble();
     double ans = 0;
     auto current_item_widget_ptr = ui->Base->currentItem();
@@ -497,6 +394,7 @@ void MainWindow::on_find_the_value_clicked()
 
 void MainWindow::on_save_clicked()
 {
+    SetColorsDefault();
     QString tmp  = ui->save_path->text();
     std::string path = tmp.toStdString();
     std::fstream out(path, out.out);
@@ -504,12 +402,85 @@ void MainWindow::on_save_clicked()
     if(!out.is_open()){
       b=1;
     }
-//    out << main_list;
-    for(auto iterator = main_list.Head;iterator!=main_list.Tail;iterator = iterator->next){
-        if((iterator != NULL)){
-            b1=1;
-        }
-        out << MainWindow::to_str(iterator->polynome_ptr)<<std::endl;
+    for(auto iterator = main_list.polys_container.begin();
+        iterator!=main_list.polys_container.end(); ++iterator){
+        auto i = *((*iterator)->polynome_ptr);
+        out << MainWindow::to_str((*iterator)->polynome_ptr)<<std::endl;
     }
 
+}
+
+void MainWindow::on_SUM_clicked()
+{
+    SetColorsDefault();
+    if (!(current_item != pre_current_item && pre_current_item != NULL)) {
+        return;
+    }
+    auto arg1 = main_list.GetDnode(pre_current_item)->polynome_ptr;
+    auto arg2 = main_list.GetDnode(current_item)->polynome_ptr;
+    auto* polynome = new std::list<node>();
+    auto iterator1 = arg1->begin();
+    auto iterator2 = arg2->begin();
+    while (iterator1 != arg1->end() && iterator2 != arg2->end()) {
+        if ((*iterator1).first > (*iterator2).first) {
+            polynome->push_back(node((*iterator1).first, (*iterator1).second));
+            ++iterator1;
+        } else if ((*iterator1).first < (*iterator2).first) {
+            polynome->push_back(node((*iterator2).first, (*iterator2).second));
+            ++iterator2;
+        } else {
+            polynome->push_back(node((*iterator2).first,
+                                     (*iterator2).second + (*iterator1).second));
+            ++iterator1;SetColorsDefault();
+            ++iterator2;
+        }
+    }
+    while (iterator1 != arg1->end()) {
+        polynome->push_back(node((*iterator1).first, (*iterator1).second));
+                ++iterator1;
+    }
+    while (iterator2 != arg2->end()) {
+        polynome->push_back(node((*iterator2).first, (*iterator2).second));
+                ++iterator2;
+    }
+    QString result = QString(to_str(polynome).c_str());
+    ui->insert_line->setText(result);
+}
+
+void MainWindow::on_Base_itemPressed(QListWidgetItem *item)
+{
+    if (pre_current_item != NULL) {
+        pre_current_item->setBackgroundColor(Qt::white);
+        pre_current_item->setForeground(Qt::black);
+    }
+
+    pre_current_item = current_item;
+    if (pre_current_item != NULL) {
+        pre_current_item->setBackgroundColor(Qt::yellow);
+        pre_current_item->setForeground(Qt::red);
+    }
+
+
+    current_item = item;
+    current_item->setBackgroundColor(Qt::blue);
+    current_item->setForeground(Qt::red);
+}
+
+void MainWindow::on_multiply_clicked() {
+    SetColorsDefault();
+    if(current_item == NULL || pre_current_item == NULL){
+        return;
+    }
+    auto arg1 = main_list.GetDnode(pre_current_item)->polynome_ptr;
+    auto arg2 = main_list.GetDnode(current_item)->polynome_ptr;
+    auto* polynome = new std::list<node>();
+    for(auto iterator1 = arg1->begin();iterator1!=arg1->end();++iterator1){
+        for(auto iterator2 = arg2->begin();iterator2!=arg2->end();++iterator2){
+            polynome->push_back(node((*iterator1).first + (*iterator2).first,
+                                     (*iterator1).second * (*iterator2).second));
+        }
+    }
+    Beautify(polynome);
+    QString result = QString(to_str(polynome).c_str());
+    ui->insert_line->setText(result);
 }

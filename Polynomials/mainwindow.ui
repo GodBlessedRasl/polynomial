@@ -17,8 +17,8 @@
    <widget class="QPushButton" name="EXIT">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>350</y>
+      <x>370</x>
+      <y>340</y>
       <width>231</width>
       <height>41</height>
      </rect>
@@ -65,7 +65,7 @@
    <widget class="QPushButton" name="DERIVATIVE">
     <property name="geometry">
      <rect>
-      <x>60</x>
+      <x>170</x>
       <y>20</y>
       <width>151</width>
       <height>51</height>
@@ -75,11 +75,11 @@
      <string>DERIVATIVE</string>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>60</x>
-      <y>100</y>
+      <x>20</x>
+      <y>10</y>
       <width>137</width>
       <height>64</height>
      </rect>
@@ -97,11 +97,11 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>60</x>
-      <y>180</y>
+      <x>10</x>
+      <y>90</y>
       <width>181</width>
       <height>132</height>
      </rect>
@@ -128,6 +128,32 @@
       <widget class="QLineEdit" name="load_path"/>
      </item>
     </layout>
+   </widget>
+   <widget class="QPushButton" name="SUM">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>90</y>
+      <width>141</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>SUMM</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="multiply">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>240</y>
+      <width>131</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>MULTIPLY</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
